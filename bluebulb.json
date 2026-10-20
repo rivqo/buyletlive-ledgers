@@ -10,17 +10,17 @@
     "email"
   ],
   "look": {
+    "chrome": {
+      "tone": "brand",
+      "placement": "sidebar"
+    },
     "sign_in": {
       "layout": "split",
       "show_logo": true
     },
-    "chrome": {
-      "placement": "sidebar",
-      "tone": "brand"
-    },
     "dashboard": {
-      "greeting": "hero",
-      "tiles": "icon"
+      "tiles": "icon",
+      "greeting": "hero"
     }
   },
   "templateVersion": 1
