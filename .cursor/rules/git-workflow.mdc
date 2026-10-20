@@ -1,0 +1,15 @@
+---
+description: Commit finished work on develop; branch only for major architecture
+alwaysApply: true
+---
+
+# Git
+
+Full rules: `docs/workflow.md`.
+
+- `develop` is the daily branch and what dev/staging run. Commit ordinary work straight to it.
+- `main` is production. Update it from `develop` only when cutting a release. Do not start features on `main`.
+- Major architecture gets a branch `arch/<topic>` from `develop`: a new service or shared package, a tenancy or auth change, an API version, or a new ADR. Merge it back into `develop` when the code and the ADR are both done.
+- After a finished task, commit the files from that task. The message says why. Do this without waiting for a separate "commit" request.
+- Do not commit `.env` files, secrets, or build artifacts (`dist`, `.next`, `*.tsbuildinfo`). Do not push unless asked.
+- The same commit updates `CHANGELOG.md`.

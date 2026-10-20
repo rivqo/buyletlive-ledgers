@@ -1,0 +1,33 @@
+---
+description: What "done" means for any change in this repo, and how to report it
+alwaysApply: true
+---
+
+# Definition of done
+
+The rules are `AGENTS.md`; the workflow is `docs/workflow.md`. Read the guide for the area you touch
+(`docs/guides/<name>.md`) before changing it, and the plan step (`docs/plans/`) when the work is part
+of one.
+
+A task is done only when all of these hold. If one can't, say which and why; never imply it passed.
+
+1. `pnpm typecheck && pnpm test && pnpm format:check && pnpm lint:specs && pnpm check:standards` pass.
+   Run them; don't predict them.
+2. Database suites ran when you touched queries: set the service's `*_TEST_DATABASE_URL` to a scratch
+   database (they wipe it).
+3. UI was looked at in a browser: light and dark, and 360px wide. A screenshot or page read counts;
+   "it compiles" doesn't.
+4. A flow that crosses services (sign-in, an event, a check) was exercised end to end once, not
+   only unit-tested.
+5. The docs that describe the change say what the code now does: the guide, reader docs
+   (`services/*/docs`, `apps/*/docs`), the spec, and an ADR for a cross-cutting decision.
+6. `CHANGELOG.md` has one bullet under today's date, in the same commit.
+7. A plan slice is ticked only when everything it names is built and works. Partly built: leave it
+   unticked and write what's left under it.
+8. Committed with a message that says why. Not pushed unless asked.
+
+## Reporting
+
+- Lead with what changed and whether it works. Name what you didn't do or couldn't verify.
+- A gap the code has (a promise in a spec that nothing enforces, an event nobody reads) goes in the
+  docs as a gap, not as a feature.

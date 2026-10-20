@@ -1,0 +1,8 @@
+{
+  "name": "example",
+  "title": "Example",
+  "sbu": "bluebulb-financials",
+  "services": ["platform"],
+  "customers": true,
+  "templateVersion": 1
+}

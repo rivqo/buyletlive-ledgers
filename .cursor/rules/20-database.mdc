@@ -1,0 +1,25 @@
+---
+description: Drizzle schema and migrations, so migrations stay generated, consistent and mergeable
+globs: services/**/db/schema.ts,services/**/migrations/**
+alwaysApply: false
+---
+
+# Database
+
+- Change `src/db/schema.ts`, then `pnpm --filter <service> db:generate`. Don't hand-write a
+  migration. If you must (data moves), still generate first so `migrations/meta/` gets a snapshot
+  for every journal entry, and check `drizzle-kit check` and a second `db:generate` (it must say
+  "No schema changes").
+- `schema.ts` declares every foreign key, index, unique and check constraint the SQL has. A
+  constraint only in SQL is drift.
+- Migrations create structure. They never insert placeholder or sample rows: seed scripts do that,
+  and seeds refuse production.
+- Before adding a migration, check other open branches for the same number
+  (`git ls-tree --name-only <branch> services/<svc>/migrations/`). Two branches with the same
+  number means one waits or renumbers before merge.
+- Never rewrite a migration another machine may have applied. An unreleased one may be folded only
+  with a note in LAUNCH.md on how to reset a local database that ran the old ones.
+- Every table has `platform_id` (and `tenant_id` where relevant) and every query filters on it,
+  unless an ADR says the service isn't tenant data (the directory, ADR 0017).
+- Uniqueness checked in code for a clear message is also enforced by an index, and the insert maps
+  the index's violation to the same message (`onUnique`), so a race gets a 409/422, not a 500.

@@ -1,0 +1,40 @@
+---
+description: Next.js staff apps and their UI (console, docs, login, and generated templates)
+globs: apps/**/*.{ts,tsx,css},packages/ui/**,packages/staff-auth/**,packages/tokens/**
+alwaysApply: false
+---
+
+# Apps and UI
+
+Follow the **UI rules** in `AGENTS.md` and `docs/guides/console.md`. See `/design` in the console.
+
+## A staff app
+
+- Sign-in is `@bluebulb/staff-auth`: `lib/auth.ts`, the middleware, the `/auth/*` routes and the
+  shared pages (see `docs/guides/staff-auth.md`). Add the app to `APPS` in
+  `tools/provision/zitadel.ts` and register it in **Platform and access → App access**.
+- Data comes from `server-only` modules in `lib/` that call services with the person's token and a
+  timeout, and turn failures into an inline `Alert` with what to do. A 404 is `notFound()`; a
+  401/403 says which role or access is needed and who grants it.
+- Server actions check the role first (`run(role, fn)`), return `{ error }` with the service's own
+  message (including `errors[].message`), and use `requireStepUp()` for step-up actions.
+- Every create sends an `Idempotency-Key` made once per dialog opening.
+
+## Screens
+
+- **Every page comes with its tour** (ADR 0030): a step for each part someone needs to find, on
+  `data-tour` anchors, listed in the help centre. A new page without one fails the template's
+  checks. Change the tour in the same commit as the page.
+- **Every gated action names its permission** in `permissions.ts`; the server call checks it with
+  `requirePermission()`, and the nav item or control names the same permission. Hiding is never
+  the only check.
+
+- Build from `@bluebulb/ui`. A pattern used twice moves into the package with a test and a
+  `/design` example. No hex, rgb or arbitrary colours in app code; add a token instead.
+- Every data view handles loading (`loading.tsx` with `Skeleton`), empty, error and no-permission.
+- List pages: 3–4 `StatTile`s, one `ListFilters` row, URL state, server-side search, the right
+  pagination for the kind of list.
+- Forms: `Field` for every control, `FormDialog` or `MultiStepForm` (more than about 8 fields or
+  dependent steps), `ConfirmDialog` for anything hard to undo, searchable pickers for long lists.
+- Copy: sentence case, plain verbs, one full stop, errors say what happened and how to fix it.
+- Check light, dark and 360px wide in a browser before finishing.

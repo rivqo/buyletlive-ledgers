@@ -1,0 +1,21 @@
+---
+description: Secrets, personal data, auth and sessions; applies to every change
+alwaysApply: true
+---
+
+# Security and personal data
+
+- Never read, print or commit `.env` files or secrets. Need a token in a command? Read it into a
+  variable inline (`T="$(grep '^X=' file | cut -d= -f2-)"`) and never echo it.
+- Real staff or customer data (exports, spreadsheets, org charts) lives only in `.local/`, which git
+  ignores. If such a file appears anywhere else in the repo, move it to `.local/` first and say so.
+  Tests and examples use made-up people only.
+- Before every commit, check `git status` for anything that isn't source: `.env*`, exports, build
+  output, `.next-*`, `tsconfig.json` or `next-env.d.ts` rewritten by a dev server.
+- Tenant and platform come from the verified request context, never the body.
+- Redirect targets come from our own config or a value we signed, never a raw query parameter
+  (`safeReturnTo`).
+- Session cookies change shape over time: reading one must fill defaults for fields older sessions
+  lack (`unsealSession`), so a deploy never signs everyone out or crashes the middleware.
+- Access (ADR 0018): an app's who and level live in its platform-api policy; dangerous actions use
+  `requireStepUp()`; never add a parallel allowlist in an app.

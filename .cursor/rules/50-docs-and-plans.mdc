@@ -1,0 +1,23 @@
+---
+description: Reader docs, developer guides, ADRs and plans stay true to the code
+globs: docs/**,services/*/docs/**,apps/*/docs/**,CHANGELOG.md,LAUNCH.md,README.md
+alwaysApply: false
+---
+
+# Docs and plans
+
+- Three kinds, three readers: reader docs (`services/<name>/docs/*.mdx`, `apps/<name>/docs/*.mdx`)
+  for people using a service; guides (`docs/guides/`) for people changing it; ADRs (`docs/adr/`)
+  for decisions. Update whichever the change affects, in the same commit.
+- Reader docs describe what the code does today. A limit the spec mentions but nothing enforces is
+  written as "not enforced yet", never as a feature.
+- Link pages by file (`./errors.mdx`, `../openapi.yaml#operationId`) so the docs check can follow
+  them. A `service` section has a quickstart; mirror `services/comms-email/docs` for the rest.
+- ADRs: a new number for a new decision; supersede, don't rewrite, an accepted one. Fix a mistaken
+  detail in an ADR only on the unmerged branch that introduced it. Keep `docs/adr/README.md` in
+  number order.
+- Plans: tick a slice only when every part of it works; write what's left under an unticked one.
+  Update the step's status in the plan and in `docs/plans/README.md`.
+- LAUNCH.md is the runbook agents follow exactly: a new service, port, env var or database goes
+  there, with a check, and with how to update an existing machine.
+- Changelog: one bullet per commit under today's date, plain words, linking the doc.

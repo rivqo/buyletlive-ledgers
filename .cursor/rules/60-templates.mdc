@@ -1,0 +1,21 @@
+---
+description: Project templates and anything generated for new apps or services (steps 06 and 07)
+globs: templates/**,tools/launcher/**,services/launcher/**
+alwaysApply: false
+---
+
+# Templates
+
+A template is the platform's standards copied into every new project, so a mistake here is copied
+everywhere.
+
+- What a new app or service must carry is `docs/starting-an-app.md` and `AGENTS.md`; the template
+  ships both (or links to them) plus these `.cursor/rules`.
+- A template is built from the same packages as the console (`@bluebulb/ui`, `@bluebulb/tokens`,
+  `@bluebulb/staff-auth`, `@bluebulb/service-kit`), never copies of their code.
+- A service template has every piece in the services rule: per-feature controllers, OpenAPI with the
+  routes test, health, env through `loadEnv`, outbox with a relay, opt-in integration tests, a
+  `docs/` folder with a quickstart.
+- A generated project must pass `pnpm typecheck && pnpm test && pnpm format:check` and its docs
+  check straight after generation; the template's own tests generate one and run them.
+- Nothing secret is written into a generated project; keys arrive through the launcher's APIs.

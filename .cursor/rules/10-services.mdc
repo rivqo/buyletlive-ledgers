@@ -1,0 +1,54 @@
+---
+description: How a backend service in services/* is built, so every service looks the same
+globs: services/**/*.ts,packages/service-kit/**/*.ts,packages/comms-kit/**/*.ts,packages/core/**/*.ts
+alwaysApply: false
+---
+
+# Services
+
+Follow `AGENTS.md` (API rules, tenancy, settings, data and events) and the `add-api-endpoint` skill
+in `.claude/skills/`. Model new code on `services/platform-api` and `services/comms-email`.
+
+## Shape
+
+- One controller per feature, beside its service: `src/<feature>/<feature>.controller.ts` and
+  `<feature>.service.ts`. Never a single routes file for the whole service.
+- Controllers validate: `parseBody(schema, body)` and `@Query()` with a zod schema, path ids with
+  `isId()` (a wrong-kind id is a 404). Services take typed input, never `unknown`.
+- Errors are `Problems.*` or `ProblemError` from `@bluebulb/core`, with copy that says what to do.
+- IDs come from `newId()`; register a new prefix in `packages/core/src/ids.ts`.
+- Every response goes through a snake_case view function. Never return a row.
+- Every list returns `{ data, next_cursor }` via `parsePageQuery`/`toPage`; search with
+  `containsPattern`.
+- Reuse shared helpers before writing one (idempotency, guards, retries). If two services need the
+  same helper, move it into a package rather than copying it.
+
+## Auth
+
+- Pick the guard on purpose: `ApiKeyGuard` + `@RequireScope` for platforms, `UserGuard` /
+  `AdminGuard` + `@RequireRole` for staff (the default role is viewer, so "anyone signed in" needs
+  `StaffGuard`), `InternalGuard` for service-to-service.
+- Staff apps never hold `INTERNAL_SERVICE_TOKEN`; they call with the person's own token.
+- Every admin write records who did it (`recordAudit` with the actor) in the same transaction.
+
+## Events and other services
+
+- State change and its outbox row: one transaction.
+- An event is only done when something can read it: relayed to platform-api (platform events), or
+  served on an internal feed (company-wide events, like the directory's). Writing to the outbox and
+  stopping there is not a feature.
+- Outbound `fetch` always has `AbortSignal.timeout`; retry 429/5xx with backoff; a poller or timer
+  takes an advisory lock so replicas don't double up, and backs off quietly.
+- Log with Nest's `Logger`, never `console`. Never log keys, secrets, tokens, email bodies or
+  personal data beyond an id.
+
+## Config and contract
+
+- Env through `loadEnv(baseEnvSchema.extend(...))`; a blank value means unset
+  (`z.preprocess(v => v === '' ? undefined : v, ...)`). New settings go in `.env.example`, LAUNCH.md
+  (including how to add them to existing files) and the guide.
+- `openapi.yaml` changes in the same commit; `openapi.routes.test.ts` must pass; every operation has
+  an `operationId` and `x-required-role` or `x-required-scope`.
+- Pure decisions (rules, plans, placement, levels) live in their own module with unit tests. A new
+  database behaviour gets an opt-in `*.integration.test.ts` gated on `<SERVICE>_TEST_DATABASE_URL`,
+  added to CI's env.

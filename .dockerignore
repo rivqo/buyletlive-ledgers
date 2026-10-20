@@ -1,0 +1,9 @@
+# Never send local secrets or install and build output into the image build.
+.env
+.env.*
+!.env.example
+node_modules
+dist
+.next
+.git
+*.tsbuildinfo
