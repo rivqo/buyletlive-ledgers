@@ -1,8 +1,27 @@
 {
-  "name": "example",
-  "title": "Example",
-  "sbu": "bluebulb-financials",
-  "services": ["platform"],
+  "name": "ledgers",
+  "title": "Ledgers",
+  "sbu": "buyletlive",
+  "tenancy": "shared",
+  "app": "ledgers",
   "customers": true,
+  "services": [
+    "platform",
+    "email"
+  ],
+  "look": {
+    "sign_in": {
+      "layout": "split",
+      "show_logo": true
+    },
+    "chrome": {
+      "placement": "sidebar",
+      "tone": "brand"
+    },
+    "dashboard": {
+      "greeting": "hero",
+      "tiles": "icon"
+    }
+  },
   "templateVersion": 1
 }
